@@ -25,8 +25,8 @@ class File:
     
     def __write_to_cache(self, filename:str , data) -> bool:
         """Method to write data to cache easily. give only filename no extension."""
-        print("writing to cache")
-        path = self.__cache_path+filename+".json"
+        path = os.path.join(self.__cache_path,filename+".json")
+        print("writing to cache:\t"+path)
         # if os.path.isfile(path):
         try:
             with open(path, "w", encoding="UTF-8") as f:
@@ -158,4 +158,4 @@ class scraper(File):
         self.__save_cache()
 
     def __save_cache(self):
-        self._File__write_to_cache("data.json",self.__cached_data)
+        self._File__write_to_cache("data",self.__cached_data)
