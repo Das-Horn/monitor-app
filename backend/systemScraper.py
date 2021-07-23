@@ -42,7 +42,7 @@ class File:
         else:
             return False
     
-    def __read_from_cache(self, filename:str) -> dict | bool:
+    def __read_from_cache(self, filename:str) -> dict:
         """Method to write data to cache easily. give only filename no extension."""
         path = self.__cache_path+filename+".json"
         if os.path.isfile(path):
@@ -60,7 +60,7 @@ class File:
 
 class settings(File):
     def __init__(self) -> None:
-        super().__init__()
+        super(settings, self).__init__()
         self.__settings = dict()
         self.__def_settings = {
             "scrape_interval" : 5,
@@ -74,23 +74,28 @@ class settings(File):
             # "setting_name" : "settings",
             "data_name" : "data"
         }
-        self.__set_path = self.__cache_path+"settings.json"
+        self.__set_path = self._File__cache_path+"\settings.json"
+        self.__init_settings()
 
     def __init_settings(self):
         if os.path.isfile(self.__set_path):
             try:
-                temp = self.__read_from_cache("settings")
+                temp = self._File__read_from_cache("settings")
                 if temp == False:
                     self.__settings = self.__def_settings
-                    self.__write_to_cache("settings", self.__settings)
+                    self._File__write_to_cache("settings", self.__settings)
                 else:
                     self.__settings = temp
             except Exception as e:
                 print("\n\nerror initializing settings:\n\n"+e)
+        else:
+            self.__settings = self.__def_settings
+            self._File__write_to_cache("settings", self.__settings)
+
 
     def save_settings(self) -> bool:
         """Saves the current setting configuration"""
-        return self.__write_to_cache("settings", self.__settings)
+        return self._File__write_to_cache("settings", self.__settings)
     
     def change_setting(self, setting:dict) -> bool:
         """a method to change the current setting configuration"""
@@ -103,7 +108,7 @@ class settings(File):
 
 class scraper(File):
     def __init__(self) -> None:
-        super().__init__()
+        super(scraper, self).__init__()
         self.__enabled = False
         self.__data_path = str()
         self.__cached_data = dict()
@@ -132,7 +137,11 @@ class scraper(File):
         """returns the cache dictionary"""
         return self.__cached_data
 
+    def set_copy(self,copy):
+        self.__settings_copy = copy
+
     def scrape_data(self):
+        print(self.__cached_data)
         if not self.__cached_data:
             self.__cached_data = self.__cd_def
         if self.__settings_copy['cpu']:
@@ -140,6 +149,6 @@ class scraper(File):
         if self.__settings_copy['RAM']:
             self.__cached_data['RAM'].append(psutil.virtual_memory().percent)
         if self.__settings_copy['Disk']:
-            self.__cached_data['disk'].append(psutil.disk_usage().percent)
+            self.__cached_data['disk'].append(psutil.disk_usage('C:\\').percent)
         # if self.__settings_copy['Net']:
         #     self.__cached_data['net'].append(psutil.net_if_stats())  /* Research more into this field */
