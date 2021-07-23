@@ -25,22 +25,25 @@ class File:
     
     def __write_to_cache(self, filename:str , data) -> bool:
         """Method to write data to cache easily. give only filename no extension."""
+        print("writing to cache")
         path = self.__cache_path+filename+".json"
-        if os.path.isfile(path):
-            try:
-                with open(path, "w", encoding="UTF-8") as f:
-                    if type(data) == str:
-                        f.writelines(data)
-                        f.close()
-                    else:
-                        f.writelines(json.dumps(data))
-                        f.close()
-                return True
-            except Exception as e:
-                print("\n\nException occured while writing to cache:\n"+e)
-                return False
-        else:
+        # if os.path.isfile(path):
+        try:
+            with open(path, "w", encoding="UTF-8") as f:
+                if type(data) == str:
+                    f.writelines(data)
+                    f.close()
+                    print("wrote string")
+                else:
+                    f.writelines(json.dumps(data))
+                    f.close()
+                    print("wrote dictionary")
+            return True
+        except Exception as e:
+            print("\n\nException occured while writing to cache:\n"+e)
             return False
+        # else:
+        #     return False
     
     def __read_from_cache(self, filename:str) -> dict:
         """Method to write data to cache easily. give only filename no extension."""
@@ -152,3 +155,7 @@ class scraper(File):
             self.__cached_data['disk'].append(psutil.disk_usage('C:\\').percent)
         # if self.__settings_copy['Net']:
         #     self.__cached_data['net'].append(psutil.net_if_stats())  /* Research more into this field */
+        self.__save_cache()
+
+    def __save_cache(self):
+        self._File__write_to_cache("data.json",self.__cached_data)
